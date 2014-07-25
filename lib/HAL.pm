@@ -25,7 +25,7 @@ sub new {
 
     %$args = (
         resource      => {},
-        links         => [],
+        links         => {},
         embedded      => {},
         %$args,
     );
@@ -41,12 +41,12 @@ sub as_hashref {
         %{ $self->{resource} },
     };
 
-    if (scalar (@{ $self->links })) {
+    if ($self->links) {
         my $links = {};
-        for (@{ $self->{links} }) {
+        for (keys %{ $self->{links} }) {
             $links = {
                 %$links,
-                %{ $_->as_hashref },
+                %{ $self->{links}->{$_}->as_hashref },
             };
         }
         $document->{_links} = $links;
@@ -129,8 +129,8 @@ sub add_links {
 
         for my $entity (@$entities) {
             $instance->add_link(+{
-                href        => $entity->{href}, #fukusuu aruyo
-                templated   => $entity->{templated}, #json true tekina
+                href        => $entity->{href},
+                templated   => $entity->{templated},
                 type        => $entity->{type},
                 deprecation => $entity->{deprecation},
                 name        => $entity->{name},
@@ -140,7 +140,7 @@ sub add_links {
             });
         }
 
-        push (@{ $self->{links} }, $instance);
+        $self->{links}->{$rel} = $instance;
     }
 }
 

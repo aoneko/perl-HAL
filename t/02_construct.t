@@ -8,7 +8,7 @@ use HAL;
 my $expected = <<'EOT'
 {
     "_links": {
-        "self": { "href": "/orders" },
+        "self": [{ "href": "/orders" }, { "href": "/orders?format=json"}],
         "next": { "href": "/orders?page=2" },
         "find": { "href": "/orders{?id}", "templated": true }
     },
@@ -53,9 +53,9 @@ $hal->add_links(
 
 note explain $hal->links;
 
-#$hal->links->{self}->add_link({
-#    href => "/orders?format=json"
-#});
+$hal->links->{self}->add_link({
+    href => "/orders?format=json"
+});
 
 my $orders = $hal->add_embedded("orders");
 

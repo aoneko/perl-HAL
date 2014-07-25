@@ -46,12 +46,12 @@ is_deeply $hal->resource, {
     shippedToday => 20,
 };
 
-is scalar(@ {$hal->links}), 3; #TODO
+is scalar(keys %{$hal->links}), 3;
 
 my $embedded_hal = $hal->embedded("orders");
 for my $order ( @ { $embedded_hal->resources} ) {
     note explain $order->resource;
-    note explain $order->links->[0];
+    note explain $order->links;
 }
 
 done_testing;
