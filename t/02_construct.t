@@ -51,6 +51,12 @@ $hal->add_links(
     find => { href => "/orders{?id}", templated => JSON::true },
 );
 
+note explain $hal->links;
+
+#$hal->links->{self}->add_link({
+#    href => "/orders?format=json"
+#});
+
 my $orders = $hal->add_embedded("orders");
 
 my $order1 = HAL->new;
@@ -80,7 +86,7 @@ $order2->add_links(
 $orders->add_resources($order1);
 $orders->add_resources($order2);
 
-note explain $hal->as_json;
+note explain decode_json($hal->as_json);
 is_deeply( decode_json($hal->as_json), decode_json($expected) );
 
 done_testing;

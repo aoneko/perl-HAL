@@ -118,20 +118,28 @@ sub add_links {
     my $self = shift;
     my $links = ref $_[0] ? $_[0] : { @_ };
 
-    #validate
-    for my $rel (keys %$links) { #TODO ikann...
+    for my $rel (keys %$links) {
+
         my $instance = HAL::Link->new({
-            relation    => $rel,
-            href        => $links->{$rel}->{href}, #fukusuu aruyo
-            templated   => $links->{$rel}->{templated}, #json true tekina
-            type        => $links->{$rel}->{type},
-            deprecation => $links->{$rel}->{deprecation},
-            name        => $links->{$rel}->{name},
-            profile     => $links->{$rel}->{profile},
-            title       => $links->{$rel}->{title},
-            hreflang    => $links->{$rel}->{hreflang},
-            resource    => $self->resource, #TODO weaken?
+            relation => $rel,
+            resource => $self->resource,
         });
+
+        my $entities = (ref($links->{$rel}) eq 'HASH') ? [$links->{$rel}] : $links->{$rel};
+
+        for my $entity (@$entities) {
+            $instance->add_link(+{
+                href        => $entity->{href}, #fukusuu aruyo
+                templated   => $entity->{templated}, #json true tekina
+                type        => $entity->{type},
+                deprecation => $entity->{deprecation},
+                name        => $entity->{name},
+                profile     => $entity->{profile},
+                title       => $entity->{title},
+                hreflang    => $entity->{hreflang},
+            });
+        }
+
         push (@{ $self->{links} }, $instance);
     }
 }
