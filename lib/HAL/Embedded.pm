@@ -21,8 +21,6 @@ sub new {
 
     %$args = (
         name          => '',
-        resources     => [],
-        is_collection => 0,
         %$args,
     );
     my $self = bless $args => $class;
@@ -34,13 +32,15 @@ sub as_hashref {
     my $self = shift;
 
     my $instances = [];
-    for (@{ $self->resources }) {
-        push (@$instances, $_->as_hashref);
-    }
-    if (scalar(@$instances) == 1) {
-        $instances = shift(@$instances);
-    }
 
+    if ( ref($self->{resources}) && ref($self->{resources}) eq 'ARRAY' ) {
+        for (@{ $self->resources }) {
+            push (@$instances, $_->as_hashref);
+        }
+    }
+    else {
+        $instances = $self->resources->as_hashref;
+    }
     my $ret = {};
     $ret->{ $self->name } = $instances;
 }
@@ -51,7 +51,16 @@ sub validate {
 
 sub add_resources {
     my ($self, $hal) = @_;
-    push (@{ $self->{resources} }, $hal);
+
+    if ( ref($self->{resources}) && ref($self->{resources}) eq 'ARRAY' ) {
+        push (@{ $self->{resources} }, $hal);
+    }
+    elsif ( !ref($self->{resources}) ) {
+        $self->{resources} = $hal;
+    }
+    else {
+        $self->{resources} = [$self->{resources}, $hal];
+    }
 }
 
 1;

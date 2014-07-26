@@ -89,7 +89,9 @@ sub from_hash {
             my $is_collection = (ref ($embedded->{$property}) eq 'ARRAY') ? 1 : 0;
             my $instances = ($is_collection) ? ($embedded->{$property}) : [($embedded->{$property})];
 
-            my $embedded_hal = $hal->add_embedded($property);
+            my $embedded_hal = $hal->add_embedded($property, +{
+                is_collection => $is_collection,
+            });
             for (@$instances) {
                 my $hal = HAL->new;
                 my $links = delete $_->{_links};
@@ -145,9 +147,13 @@ sub add_links {
 }
 
 sub add_embedded {
-    my ($self, $property) = @_;
+    my ($self, $property, $opts) = @_;
 
-    my $instance = HAL::Embedded->new(name => $property);
+    $opts ||= +{};
+    my $instance = HAL::Embedded->new({
+        name => $property,
+        ($opts->{is_collection}) ? (resources => []) : (),
+    });
 
     $self->{embedded}->{$property} = $instance;
     return $instance;
