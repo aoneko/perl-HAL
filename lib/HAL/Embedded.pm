@@ -63,4 +63,9 @@ sub add_resources {
     }
 }
 
+sub is_collection {
+    my $self = shift;
+    return ( ref($self->{resources}) && ref($self->{resources}) eq 'ARRAY' ) ? 1 : 0;
+}
+
 1;

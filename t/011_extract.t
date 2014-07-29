@@ -13,7 +13,7 @@ my $doc_json = <<'EOT'
         "find": { "href": "/orders{?id}", "templated": true }
     },
     "_embedded": {
-        "orders": [{
+        "orders": {
             "_links": {
                 "self": { "href": "/orders/123" },
                 "basket": { "href": "/baskets/98712" },
@@ -22,16 +22,7 @@ my $doc_json = <<'EOT'
             "total": 30,
             "currency": "USD",
             "status": "shipped"
-        },{
-            "_links": {
-                "self": { "href": "/orders/124" },
-                "basket": { "href": "/baskets/97213" },
-                "customer": { "href": "/customers/12369" }
-            },
-           "total": 20,
-           "currency": "USD",
-           "status": "processing"
-        }]
+        }
     },
     "currentlyProcessing": 14,
     "shippedToday": 20
@@ -46,14 +37,10 @@ is_deeply $hal->resource, {
     shippedToday => 20,
 };
 
-is scalar(keys %{$hal->links}), 3;
-
 my $embedded_hal = $hal->embedded("orders");
 
-is $embedded_hal->is_collection, 1;
-for my $order ( @ { $embedded_hal->resources} ) {
-    note explain $order->resource;
-    note explain $order->links;
-}
+is $embedded_hal->is_collection, 0;
+
+note explain $embedded_hal->resources->as_hashref;
 
 done_testing;
