@@ -59,6 +59,9 @@ sub as_hashref {
         }
         $document->{_embedded} = $embedded;
     }
+    else { #FIXME
+        $document->{_embedded} = {};
+    }
 
     return $document;
 }
